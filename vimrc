@@ -5,15 +5,14 @@
 " Sections:
 "    -> Plugins
 "    -> General
-"    -> Commands mapping
-"    -> VIM user interface
+"    -> User interface
 "    -> Colors and Fonts
-"    -> Visual mode related
-"    -> Moving around, tabs and buffers
 "    -> Status line
 "    -> Tab line
-"    -> Editing mappings
-"    -> vimgrep searching and cope displaying
+"    -> Maps: normal mode
+"    -> Maps: visual mode
+"    -> Maps: command-line mode
+"    -> Maps: other
 "    -> Misc
 "    -> Helper functions
 "
@@ -23,6 +22,7 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Specify a directory for plugins
 call plug#begin('~/.local/share/nvim/plugged')
+
 " Themes
 Plug '/Users/ebajo/playground/minimo'
 
@@ -45,6 +45,7 @@ Plug 'junegunn/fzf.vim'
 
 " Utils
 Plug 'AndrewRadev/sideways.vim'
+
 call plug#end()
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -53,22 +54,21 @@ call plug#end()
 " Sets how many lines of history VIM has to remember
 set history=500
 
-" Set text wrapping rules
-set tw=79
+" Set utf8 as standard encoding and en_US as the standard language
+set encoding=utf8
 
 " Enable filetype plugins
 filetype plugin on
 filetype indent on
+
+" Use Unix as the standard file type
+set ffs=unix,dos,mac
 
 " Enable true color support
 set termguicolors
 
 " Set to auto read when a file is changed from the outside
 set autoread
-
-" With a map leader it's possible to do extra key combinations
-" like <leader>w saves the current file
-let mapleader = ","
 
 " Turn backup off, since most stuff is in SVN, git et.c anyway...
 set nobackup
@@ -85,68 +85,28 @@ set smarttab
 set shiftwidth=4
 set tabstop=4
 
-" Linebreak on 500 characters
+" Set the text width for automatic word wrapping (Visual selection + gq)
 set lbr
-set tw=500
+set tw=79
 
-set ai "Auto indent
-set si "Smart indent
-set wrap "Wrap lines
+" Auto indent
+set ai
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Commands mapping
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Fast saving
-nmap <leader>w :w!<cr>
+" Smart indent
+set si
 
-" Reload buffer
-nmap <leader>e :e!<cr>
+" Wrap lines
+set wrap
 
-" Esc to escape terminal mode
-tnoremap <Esc> <C-\><C-n>
-
-" Esc to close vim file explorer
-autocmd FileType netrw nmap <silent> <buffer> <Esc> :bd<cr>
-
-" Movement in command line mode
-function! EnterSubdir()
-    call feedkeys("\<Down>", 't')
-    return ''
-endfunction
-" Command-line mappings (<Tab>, <Down>, etc) aren't interpreted in wildmenu mode
-cnoremap <expr> <C-j> EnterSubdir()
-cnoremap <c-k> <Up>
-cnoremap <c-h> <Left>
-cnoremap <c-l> <Right>
-cnoremap <c-a> <c-b>
-
-" Autofix errors
-nnoremap + :ALEFix<cr>
-
-" Go to definition
-nnoremap <leader>g :ALEGoToDefinition<cr>
-
-" Move arguments order
-nmap <M-l> :SidewaysRight<cr>
-nmap <M-h> :SidewaysLeft<cr>
-
-" Open Netrw
-map <C-n> :Explore<cr>
-
-" Search
-nmap <Leader>t :GFiles<CR>
-nmap <Leader>s :GFiles?<CR>
-nmap <Leader>b :Buffers<CR>
-nmap <Leader>f :Ag 
+" With a map leader it's possible to do extra key combinations
+" like <leader>w saves the current file
+let mapleader = ","
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => VIM user interface
+" => User interface
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Set 7 lines to the cursor - when moving vertically using j/k
 set so=7
-
-" Set the text width for automatic word wrapping (Visual selection + gq)
-set tw=79
 
 " Turn on the Wild menu
 set wildmenu
@@ -217,6 +177,13 @@ set tm=500
 set listchars=eol:¬,tab:>·,trail:~,extends:>,precedes:<
 set list
 
+" Specify the behavior when switching between buffers 
+try
+  set switchbuf=useopen,usetab,newtab
+  set stal=2
+catch
+endtry
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Colors and Fonts
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -230,50 +197,9 @@ endif
 
 silent colorscheme minimo
 
-" Set utf8 as standard encoding and en_US as the standard language
-set encoding=utf8
-
-" Use Unix as the standard file type
-set ffs=unix,dos,mac
-
 " Color overrides
 highlight ALEErrorSign guibg=NONE ctermbg=NONE
 highlight ALEWarningSign guibg=NONE ctermbg=NONE
-
-""""""""""""""""""""""""""""""
-" => Visual mode related
-""""""""""""""""""""""""""""""
-" Visual mode pressing * or # searches for the current selection
-vnoremap <silent> * :<C-u>call VisualSelection('', '')<CR>/<C-R>=@/<CR><CR>
-vnoremap <silent> # :<C-u>call VisualSelection('', '')<CR>?<C-R>=@/<CR><CR>
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Moving around, tabs, windows and buffers
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Smart way to move between windows
-map <C-j> <C-W>j
-map <C-k> <C-W>k
-map <C-h> <C-W>h
-map <C-l> <C-W>l
-
-" Close the current buffer
-map <leader>q :bdelete<cr>
-
-" Close all the buffers
-map <leader>qa :bufdo bd<cr>
-
-" Switch CWD to the directory of the open buffer
-map <leader>cd :cd %:p:h<cr>:pwd<cr>
-
-" Specify the behavior when switching between buffers 
-try
-  set switchbuf=useopen,usetab,newtab
-  set stal=2
-catch
-endtry
-
-" Return to last edit position when opening files (You want this!)
-au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
 """"""""""""""""""""""""""""""
 " => Status line
@@ -285,7 +211,7 @@ set laststatus=2
 set statusline=
 set statusline+=%<\                       " cut at start
 set statusline+=%{expand('%:p:.')}        " path
-set statusline+=%H%M%R%W                 " flags and buf no
+set statusline+=%H\ %1M\ %1R\ %1W         " flags and buf no
 set statusline+=%=%10((%l,%c)%)\          " line and column
 set statusline+=%P                        " percentage of file
 set statusline+=%<\                       " cut at end
@@ -317,45 +243,118 @@ endfunction
 set tabline=%!MyTabLine()
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Editing mappings
+" => Maps: normal mode
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Remap VIM 0 to first non-blank character
-"nnoremap 0 ^
+" Fast saving
+nmap <leader>w :w!<cr>
+
+" Reload buffer
+nmap <leader>e :e!<cr>
+
+" Autofix errors
+nnoremap + :ALEFix<cr>
+
+" Go to definition
+nnoremap <leader>g :ALEGoToDefinition<cr>
+
+" Move arguments order
+nmap <M-l> :SidewaysRight<cr>
+nmap <M-h> :SidewaysLeft<cr>
+
+" Open Netrw
+nmap <C-n> :Explore<cr>
+
+" Search
+nmap <Leader>t :GFiles<CR>
+nmap <Leader>s :GFiles?<CR>
+nmap <Leader>b :Buffers<CR>
+nmap <Leader>f :Ag 
+
+" Smart way to move between windows
+nmap <C-j> <C-W>j
+nmap <C-k> <C-W>k
+nmap <C-h> <C-W>h
+nmap <C-l> <C-W>l
+
+" Close the current buffer
+nmap <leader>q :bdelete<cr>
+
+" Close all the buffers
+nmap <leader>qa :bufdo bd<cr>
+
+" Switch CWD to the directory of the open buffer
+nmap <leader>cd :cd %:p:h<cr>:pwd<cr>
 
 " Move a line of text using ALT+[jk] or Command+[jk] on mac
 nmap <M-j> mz:m+<cr>`z
 nmap <M-k> mz:m-2<cr>`z
-vmap <M-j> :m'>+<cr>`<my`>mzgv`yo`z
-vmap <M-k> :m'<-2<cr>`>my`<mzgv`yo`z
 
 if has("mac") || has("macunix")
   nmap <D-j> <M-j>
   nmap <D-k> <M-k>
+endif
+
+" Quickly open a markdown buffer for scribble
+nmap <leader>x :e ~/buffer.md<cr>
+
+" Toggle paste mode on and off
+nmap <leader>pp :setlocal paste!<cr>
+
+" Information about the highlighting group
+nmap <F10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
+\ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
+\ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Maps: visual mode
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Visual mode pressing * or # searches for the current selection
+vnoremap <silent> * :<C-u>call VisualSelection('', '')<CR>/<C-R>=@/<CR><CR>
+vnoremap <silent> # :<C-u>call VisualSelection('', '')<CR>?<C-R>=@/<CR><CR>
+
+" Move a line of text using ALT+[jk] or Command+[jk] on mac
+vmap <M-j> :m'>+<cr>`<my`>mzgv`yo`z
+vmap <M-k> :m'<-2<cr>`>my`<mzgv`yo`z
+
+if has("mac") || has("macunix")
   vmap <D-j> <M-j>
   vmap <D-k> <M-k>
 endif
 
-" Delete trailing white space on save, useful for some filetypes ;)
-fun! CleanExtraSpaces()
-    let save_cursor = getpos(".")
-    let old_query = getreg('/')
-    silent! %s/\s\+$//e
-    call setpos('.', save_cursor)
-    call setreg('/', old_query)
-endfun
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Maps: command-line mode
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Movement in command line mode
+function! EnterSubdir()
+    call feedkeys("\<Down>", 't')
+    return ''
+endfunction
+" Command-line mappings (<Tab>, <Down>, etc) aren't interpreted in wildmenu mode
+cnoremap <expr> <C-j> EnterSubdir()
+cnoremap <c-k> <Up>
+cnoremap <c-h> <Left>
+cnoremap <c-l> <Right>
+cnoremap <c-a> <c-b>
 
-if has("autocmd")
-    autocmd BufWritePre *.txt,*.js,*.py,*.wiki,*.sh,*.coffee :call CleanExtraSpaces()
-endif
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Maps: other
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Esc to escape terminal mode
+tnoremap <Esc> <C-\><C-n>
+
+" Esc to close vim file explorer
+autocmd FileType netrw nmap <silent> <buffer> <Esc> :bd<cr>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Misc
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Quickly open a markdown buffer for scribble
-map <leader>x :e ~/buffer.md<cr>
+" Delete trailing white space on save, useful for some filetypes ;)
+if has("autocmd")
+    autocmd BufWritePre *.txt,*.js,*.py,*.wiki,*.sh,*.coffee :call CleanExtraSpaces()
+endif
 
-" Toggle paste mode on and off
-map <leader>pp :setlocal paste!<cr>
+" Return to last edit position when opening files (You want this!)
+au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Helper functions
@@ -381,16 +380,10 @@ function! VisualSelection(direction, extra_filter) range
     let @" = l:saved_reg
 endfunction
 
-map <F10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
-\ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
-\ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
-
-" a little more informative version of the above
-nmap <Leader>I :call <SID>SynStack()<CR>
-
-function! <SID>SynStack()
-    if !exists("*synstack")
-        return
-    endif
-    echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
-endfunc
+fun! CleanExtraSpaces()
+    let save_cursor = getpos(".")
+    let old_query = getreg('/')
+    silent! %s/\s\+$//e
+    call setpos('.', save_cursor)
+    call setreg('/', old_query)
+endfun
