@@ -21,10 +21,10 @@
 " => Plugins
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Specify a directory for plugins
-call plug#begin('~/.local/share/nvim/plugged')
+call plug#begin('~/.vim/plugged')
 
 " Themes
-Plug '/Users/ebajo/playground/minimo'
+Plug 'bajoz/minimo'
 
 " Javascript
 Plug 'mxw/vim-jsx'
