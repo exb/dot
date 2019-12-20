@@ -245,11 +245,20 @@ set tabline=%!MyTabLine()
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Maps: normal mode
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Map alt keys
+execute "set <M-j>=∆"
+execute "set <M-k>=˚"
+execute "set <M-h>=˙"
+execute "set <M-l>=¬"
+
 " Fast saving
 nmap <leader>w :w!<cr>
 
 " Reload buffer
-nmap <leader>e :e!<cr>
+nmap <leader>r :e!<cr>
+
+" Edit files located in the same dir as the current file
+nmap <leader>e :e <C-R>=expand("%:h") . "/" <CR>
 
 " Autofix errors
 nnoremap + :ALEFix<cr>
@@ -266,9 +275,16 @@ nmap <C-n> :Explore<cr>
 
 " Search
 nmap <Leader>t :GFiles<CR>
-nmap <Leader>s :GFiles?<CR>
-nmap <Leader>b :Buffers<CR>
 nmap <Leader>f :Ag 
+
+" Show git diff
+nmap <Leader>s :GFiles?<CR>
+
+" Show open buffers
+nmap <c-b> :Buffers<CR>
+
+" Turn off highlighting
+nmap <C-m> :nohl<CR>
 
 " Smart way to move between windows
 nmap <C-j> <C-W>j
@@ -299,6 +315,10 @@ nmap <leader>x :e ~/buffer.md<cr>
 
 " Toggle paste mode on and off
 nmap <leader>pp :setlocal paste!<cr>
+
+" Insert timestamp at EOF
+nmap <F3> Go<Esc>()dGo<Esc>0Do[<C-R>=strftime("%Y-%m-%d %H:%M:%S")<CR>]<CR>
+imap <F3> <Esc>Go<Esc>()dGo<Esc>0Do[<C-R>=strftime("%Y-%m-%d %H:%M:%S")<CR>]<CR>
 
 " Information about the highlighting group
 nmap <F10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
@@ -349,9 +369,9 @@ autocmd FileType netrw nmap <silent> <buffer> <Esc> :bd<cr>
 " => Misc
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Delete trailing white space on save, useful for some filetypes ;)
-if has("autocmd")
-    autocmd BufWritePre *.txt,*.js,*.py,*.wiki,*.sh,*.coffee :call CleanExtraSpaces()
-endif
+"if has("autocmd")
+"    autocmd BufWritePre *.txt,*.js,*.py,*.wiki,*.sh,*.coffee :call CleanExtraSpaces()
+"endif
 
 " Return to last edit position when opening files (You want this!)
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
