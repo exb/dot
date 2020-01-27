@@ -29,12 +29,18 @@ Plug 'bajoz/minimo'
 " Javascript
 Plug 'mxw/vim-jsx'
 Plug 'pangloss/vim-javascript'
+Plug 'leafgarland/typescript-vim'
+Plug 'ianks/vim-tsx'
 
 " Linting
 Plug 'w0rp/ale'
+  let g:ale_linters = {
+  \   'typescript': ['tsserver', 'tslint'],
+  \}
   let g:ale_fixers = {
   \   '*': ['remove_trailing_lines'],
   \   'javascript': ['prettier', 'eslint'],
+  \   'typescript': ['prettier'],
   \}
   let g:ale_sign_error = '●'
   let g:ale_sign_warning = '▲'
@@ -286,18 +292,6 @@ nmap <c-b> :Buffers<CR>
 " Turn off highlighting
 nmap <C-m> :nohl<CR>
 
-" Smart way to move between windows
-nmap <C-j> <C-W>j
-nmap <C-k> <C-W>k
-nmap <C-h> <C-W>h
-nmap <C-l> <C-W>l
-
-" Close the current buffer
-nmap <leader>q :bdelete<cr>
-
-" Close all the buffers
-nmap <leader>qa :bufdo bd<cr>
-
 " Switch CWD to the directory of the open buffer
 nmap <leader>cd :cd %:p:h<cr>:pwd<cr>
 
@@ -369,11 +363,11 @@ autocmd FileType netrw nmap <silent> <buffer> <Esc> :bd<cr>
 " => Misc
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Delete trailing white space on save, useful for some filetypes ;)
-"if has("autocmd")
-"    autocmd BufWritePre *.txt,*.js,*.py,*.wiki,*.sh,*.coffee :call CleanExtraSpaces()
-"endif
+if has("autocmd")
+    autocmd BufWritePre *.txt,*.js,*.py,*.wiki,*.sh,*.coffee :call CleanExtraSpaces()
+endif
 
-" Return to last edit position when opening files (You want this!)
+" Return to last edit position when opening files
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
